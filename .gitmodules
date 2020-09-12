@@ -1,0 +1,3 @@
+[submodule "src/cf-uaac"]
+	path = src/cf-uaac
+	url = https://github.com/cloudfoundry/cf-uaac.git

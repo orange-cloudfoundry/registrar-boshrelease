@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+export PATH=${PATH}:/var/vcap/packages/pxc/bin
+
+
+function create_db_and_user {
+  local l_DBHost="<%= p('db.host') %>"
+  local l_DBPort="<%= p('db.port') %>"
+  local l_DBUser="<%= p('db.user') %>"
+  local l_DBPassword="<%= p('db.password') %>"
+
+  local l_db=$1; shift
+  local l_user=$1; shift
+  local l_password=$1; shift
+
+  mysql --host=${l_DBHost} --port=${l_DBPort} --user=${l_DBUser} --password=${l_DBPassword} <<EOS
+    CREATE DATABASE IF NOT EXISTS ${l_db} CHARACTER SET = UTF8;
+    CREATE USER IF NOT EXISTS '${l_user}'@'%';
+    ALTER USER  '${l_user}'@'%' IDENTIFIED BY '${l_password}';
+    GRANT ALL PRIVILEGES ON ${l_db}.* TO '${l_user}'@'%';
+EOS
+}
+
+<% if !spec.bootstrap %>
+# only for first instance
+exit 0
+<% end %>
+
+<% p('databases').each do |db| %>
+create_db_and_user "<%= db['name']%>" "<%= db['user']%>" "<%= db['password']%>"
+<% end %>

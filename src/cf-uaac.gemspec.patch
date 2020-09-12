@@ -1,0 +1,15 @@
+--- cf-uaac.gemspec	2020-09-13 11:50:22.451677421 +0200
++++ cf-uaac.gemspec	2020-09-13 11:49:50.710301098 +0200
+@@ -27,9 +27,9 @@
+   s.rubyforge_project = 'cf-uaac'
+ 
+   s.license       = 'Apache-2.0'
++  s.files         = `find . | grep -v vendor`.split("\n")
++  s.test_files    = `find spec | grep -v vendor`.split("\n")
++  s.executables   = `find bin | grep -v vendor`.split("\n").map{ |f| File.basename(f) }
+-  s.files         = `git ls-files`.split("\n")
+-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+   s.require_paths = ['lib']
+ 
+   # dependencies

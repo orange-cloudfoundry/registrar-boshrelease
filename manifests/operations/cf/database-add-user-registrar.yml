@@ -1,0 +1,12 @@
+- type: replace
+  path: /instance_groups/name=database/jobs/name=pxc-mysql/properties/seeded_users?/registrar?
+  value:
+    password: "((mysql_users_registrar_secret))"
+    host: any
+    role: admin
+
+- type: replace
+  path: /variables/-
+  value:
+    name: mysql_users_registrar_secret
+    type: password

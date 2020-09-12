@@ -1,0 +1,19 @@
+- type: replace
+  path: /instance_groups/0/jobs/0:before
+  value:
+    release: registrar
+    name: db-registrar
+    properties:
+      db:
+        host: database.service.cf.internal
+        port: 3306
+        user: registrar
+        password: ((/((director_name))/cf/mysql_users_registrar_secret))
+      databases: []
+
+- type: replace
+  path: /releases/name=registrar?
+  value:
+    name: registrar
+    version: latest
+    url: https://github.com/orange-cloudfoundry/registrar-boshrelease/releases/download/v1.0.0/registrar-1.0.0.tgz

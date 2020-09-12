@@ -1,0 +1,13 @@
+- type: replace
+  path: /instance_groups/name=uaa/jobs/name=uaa/properties/uaa/clients/registrar?
+  value:
+    authorities: clients.admin,scim.write,scim.read,password.write
+    authorized-grant-types: client_credentials
+    scope: uaa.none
+    secret: "((uaa_clients_registrar_secret))"
+
+- type: replace
+  path: /variables/-
+  value:
+    name: uaa_clients_registrar_secret
+    type: password

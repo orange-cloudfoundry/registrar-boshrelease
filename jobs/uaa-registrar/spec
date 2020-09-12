@@ -1,0 +1,47 @@
+---
+name: uaa-registrar
+
+templates:
+  pre-start.erb: bin/pre-start
+
+packages:
+  - uaac
+  - ruby-2.5.5-r0.10.0
+
+properties:
+  uaa.api:
+    description: "UAA API enpoint"
+    example: https://uaa.my-system-domain.org
+  uaa.client_id:
+    description: "Client id to connect UAA, must have clients.read, clients.write and clients.secert authorities"
+  uaa.client_secret:
+    description: "Client's secret"
+  uaa.skip_ssl_verify:
+    default: false
+    description: "Sould SSL certificate checks be ignored, default is false"
+  clients:
+    default: []
+    description: "List of UAA clients to initialize with given properties"
+    example: |
+      - client_id: mycli
+        client_secret: my-secret
+        authorities: uaa.admin
+        authorized_grant_types: client_credentials
+        display_name: friendly-name
+        redirect_uri: https://myredirect/oauth
+        refresh_token_validity: 30
+        access_token_validity: 20
+        scope: uaa.user
+  users:
+    default: []
+    description: "List of UAA users to initialize with given properties"
+    example: |
+      - name: my-user
+        password: my-password
+        groups:
+          - group1
+          - group2
+        emails: my@compagny.com
+        # opts
+        family_name: value
+        given_name: value

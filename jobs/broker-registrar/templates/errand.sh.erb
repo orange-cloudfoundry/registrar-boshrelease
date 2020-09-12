@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -eu
+
+export PACKAGE=/var/vcap/packages/cf-cli-7-linux/bin
+export PATH=${PATH}:${PACKAGE}
+export CF_BIN=${PACKAGE}/cf
+export CF_DIAL_TIMEOUT=30
+
+function update_service_broker() {
+  local l_name=$1; shift
+  local l_username=$1; shift
+  local l_password=$1; shift
+  local l_url=$1; shift
+
+  echo "  -> updating broker"
+  ${CF_BIN} update-service-broker "${l_name}" "${l_username}" "${l_password}" "${l_url}"
+}
+
+function create_service_broker() {
+  local l_name=$1; shift
+  local l_username=$1; shift
+  local l_password=$1; shift
+  local l_url=$1; shift
+
+  echo "  -> creating broker"
+  ${CF_BIN} create-service-broker "${l_name}" "${l_username}" "${l_password}" "${l_url}"
+}
+
+function create_or_update_service_broker() {
+  local l_name=$1; shift
+  local l_username=$1; shift
+  local l_password=$1; shift
+  local l_url=$1; shift
+
+  echo "Processing broker"
+  echo "  name:     ${l_name}"
+  echo "  url:      ${l_url}"
+  echo "  username: ${l_username}"
+  create_service_broker "${l_name}" "${l_username}" "${l_password}" "${l_url}" || {
+    echo "Service broker already exists, running update"
+    update_service_broker "${l_name}" "${l_username}" "${l_password}" "${l_url}"
+  }
+  echo ""
+}
+
+function cf_login()
+{
+  local l_api='<%= p("cf.api") %>'
+  local l_username='<%= p("cf.username") %>'
+  local l_password='<%= p("cf.password") %>'
+  local l_skipSSL='<%= p("cf.skip_ssl_validation") %>'
+
+  echo "Login to Cloudfoundry"
+  echo "  api_url:             ${l_api}"
+  echo "  skip_ssl_validation: ${l_skipSSL}"
+  echo "  username:            ${l_username}"
+
+  if [[ ${l_skipSSL} == "true" ]]; then
+      ${CF_BIN} api ${l_api} --skip-ssl-validation
+  else
+    ${CF_BIN} api ${l_api}
+  fi
+
+  ${CF_BIN} auth "${l_username}" "${l_password}"
+  echo ""
+}
+
+cf_login
+
+<% p("brokers", []).each do |broker| %>
+create_or_update_service_broker "<%= broker['name'] %>" "<%= broker['username'] %>" "<%= broker['password'] %>" "<%= broker['protocol'] %>://<%= broker['host'] %>:<%= broker['port'] %>"
+<% broker['public_plans'].each do |plan| %>
+${CF_BIN} enable-service-access "<%= broker['name'] %>" -p "<%= plan %>"
+<% end %>
+<% end %>

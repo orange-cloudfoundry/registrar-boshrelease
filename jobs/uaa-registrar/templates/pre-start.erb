@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+
+source /var/vcap/packages/ruby-2.5.5-r0.10.0/bosh/runtime.env
+export BUNDLE_GEMFILE=$(ls /var/vcap/data/packages/uaac/*/cf-uaac/Gemfile)
+export PATH=${PATH}:/var/vcap/packages/uaac/bin
+export HOME=/var/vcap/data/uaa-registrar/
+
+set -e
+
+function login {
+  local l_api="<%= p('uaa.api') %>"
+  local l_clientID="<%= p('uaa.client_id') %>"
+  local l_clientSecret="<%= p('uaa.client_secret') %>"
+  local l_args=""
+  <% if p('uaa.skip_ssl_verify') %>
+  l_args="--skip-ssl-validation"
+  <% end %>
+  echo "-> login to ${l_api} with client ${l_clientID}"
+  uaac target ${l_args} ${l_api}
+  uaac token client get ${l_clientID} --secret ${l_clientSecret}
+}
+
+function client_exists {
+  local l_id=$1; shift
+
+  echo "-> checking if client ${l_id} exists"
+  uaac client get ${l_id} > /dev/null 2>&1
+}
+
+function user_exists {
+  local l_name=$1; shift
+
+  echo "-> checking if user ${l_name} exists"
+  uaac user get ${l_name} > /dev/null 2>&1
+}
+
+function create_or_update_client {
+  local l_id=$1; shift
+  local l_secret=$1; shift
+
+  if client_exists ${l_id}; then
+      echo "-> updating client ${l_id}"
+      uaac client update ${l_id} $@ || true
+      echo "-> setting secret form client ${l_id}"
+      uaac secret set ${l_id} --secret ${l_secret}
+  else
+    echo "-> adding new client ${l_id}"
+    uaac client add ${l_id} --secret ${l_secret} $@
+  fi
+}
+
+
+function set_user_password {
+  local l_name=$1; shift
+  local l_password=$1; shift
+  local l_status=0
+  local l_tmp
+
+  l_tmp=$(mktemp)
+  echo "-> setting password of user ${l_name}"
+  if ! uaac password set ${l_name} --password ${l_password} > ${l_tmp} 2>&1; then
+      l_status=1
+      if grep -q "cannot be the same as the old password" ${l_tmp}; then
+          l_status=0
+      else
+        cat ${l_tmp}
+      fi
+  fi
+  rm -f ${l_tmp}
+  return ${l_status}
+}
+
+function create_or_update_user {
+  local l_name=$1; shift
+  local l_password=$1; shift
+
+  if user_exists ${l_name}; then
+      echo "-> updating user ${l_name}"
+      uaac user update ${l_name} $@ || true
+      echo "-> setting password for user ${l_name}"
+      set_user_password ${l_name} ${l_password}
+  else
+    echo "-> creating user ${l_name}"
+    uaac user add ${l_id} --password ${l_secret} $@
+  fi
+}
+
+function ensure_user_in_group {
+  local l_name=$1; shift
+  local l_group=$1; shift
+  local l_status=0
+  local l_out
+
+  l_out=$(mktemp)
+  echo "-> adding user ${l_name} to group ${l_group}"
+  if ! uaac member add ${l_group} ${l_name} > ${l_out} 2>&1; then
+      l_status=1
+      if grep -q -E '(member_already_exists|no new users given)' ${l_out}; then
+          l_status=0
+      else
+        cat ${l_out}
+      fi
+  fi
+  rm -f ${l_out}
+  return ${l_status}
+}
+
+function ensure_user_in_groups {
+  local l_name=$1; shift
+
+  for c_group in $@; do
+    ensure_user_in_group ${l_name} ${c_group} || return 1
+  done
+}
+
+<% if !spec.bootstrap %>
+# only for first instance
+exit 0
+<% end %>
+
+# init context to uaa server
+login
+
+# create or update requested clients
+<%
+ignore = [ "client_id", "client_secret" ]
+p('clients').each do |c|
+  args = []
+  c.each do |param, value|
+    if ignore.include?(param)
+      next
+    end
+    args.push("--#{param}")
+    args.push("\"#{value}\"")
+  end
+%>
+create_or_update_client "<%= c['client_id'] %>" "<%= c['client_secret'] %>" <%= args.join(" ") %>
+<% end %>
+
+
+# create or update requested users
+<%
+ignore = [ "name", "password", "groups" ]
+p('users').each do |user|
+  args = []
+  user.each do |param, value|
+    if ignore.include?(param)
+      next
+    end
+    args.push("--#{param}")
+    args.push("\"#{value}\"")
+  end
+  groups = user.fetch("groups", [])
+  groups = groups.map{ |v| '"' + v + '"' }
+%>
+create_or_update_user "<%= user['name'] %>" "<%= user['password'] %>" <%= args.join(" ") %>
+ensure_user_in_groups "<%= user['name'] %>" <%= groups.join(" ") %>
+<% end %>

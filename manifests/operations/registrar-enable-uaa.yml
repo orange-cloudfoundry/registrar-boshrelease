@@ -1,0 +1,20 @@
+- type: replace
+  path: /instance_groups/0/jobs/0:before
+  value:
+    release: registrar
+    name: uaa-registrar
+    properties:
+      uaa:
+        api: https://uaa.((system_domain))/
+        client_id: registrar
+        client_secret: ((/((director_name))/cf/uaa_clients_registrar_secret))
+        skip_ssl_verify: ((skip_ssl_verify))
+      clients: []
+      users: []
+
+- type: replace
+  path: /releases/name=registrar?
+  value:
+    name: registrar
+    version: latest
+    url: https://github.com/orange-cloudfoundry/registrar-boshrelease/releases/download/v1.0.0/registrar-1.0.0.tgz

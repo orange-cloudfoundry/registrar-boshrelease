@@ -1,0 +1,27 @@
+---
+name: db-registrar
+
+templates:
+  pre-start.erb: bin/pre-start
+
+packages:
+  - pxc
+
+properties:
+  db.host:
+    description: "MySQL server host, database.service.cf.internal by default"
+    default: database.service.cf.internal
+  db.port:
+    description: "MySQL server port, 3306 by default"
+    default: 3306
+  db.user:
+    description: "User to connect MySQL server, must be able to create databases and users"
+  db.password:
+    description: "User's password"
+  databases:
+    default: []
+    description: "List of database and user to create"
+    example:
+    - name: mydb
+      user: mydb
+      password: mydb-secret
