@@ -16,8 +16,18 @@ function login {
   l_args="--skip-ssl-validation"
   <% end %>
   echo "-> login to ${l_api} with client ${l_clientID}"
-  uaac target ${l_args} ${l_api}
-  uaac token client get ${l_clientID} --secret ${l_clientSecret}
+  uaac target ${l_args} ${l_api} || return 1
+  uaac token client get ${l_clientID} --secret ${l_clientSecret} || return 1
+}
+
+function login_retry {
+  for c_try in $(seq 1 5); do
+    if login; then
+        return 0
+    fi
+    sleep 3
+  done
+  return 1
 }
 
 function client_exists {
@@ -119,7 +129,7 @@ exit 0
 <% end %>
 
 # init context to uaa server
-login
+login_retry
 
 # create or update requested clients
 <%
