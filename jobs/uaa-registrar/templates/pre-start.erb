@@ -91,7 +91,7 @@ function create_or_update_user {
       set_user_password ${l_name} ${l_password}
   else
     echo "-> creating user ${l_name}"
-    uaac user add ${l_id} --password ${l_secret} $@
+    uaac user add ${l_name} --password ${l_password} $@
   fi
 }
 
