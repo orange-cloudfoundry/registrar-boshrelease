@@ -16,5 +16,5 @@
   path: /releases/name=registrar?
   value:
     name: registrar
-    version: latest
-    url: https://github.com/orange-cloudfoundry/registrar-boshrelease/releases/download/v1.0.0/registrar-1.0.0.tgz
+    version: "((registrar.version))"
+    url: https://github.com/orange-cloudfoundry/registrar-boshrelease/releases/download/v((registrar.version))/registrar-((registrar.version)).tgz
