@@ -4,3 +4,9 @@
     name: registrar
     version: "((registrar.version))"
     url: ((repository_base))/registrar/registrar-((registrar.version))-((version-stemcell.os))-((version-stemcell.major)).((version-stemcell.minor)).tgz
+    stemcell:
+      os: ((version-stemcell.os))
+      version: ((version-stemcell.major)).((version-stemcell.minor))
+    exported_from:
+      - os: ((version-stemcell.os))
+        version: ((version-stemcell.major)).((version-stemcell.minor))
