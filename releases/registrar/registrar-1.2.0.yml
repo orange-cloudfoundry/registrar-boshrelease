@@ -1,0 +1,50 @@
+name: registrar
+version: 1.2.0
+commit_hash: 62b7996
+uncommitted_changes: false
+jobs:
+- name: broker-registrar
+  version: e877ef697267501074bb54c8f5bc70d2160a75a96345644b98da1370c964f75b
+  fingerprint: e877ef697267501074bb54c8f5bc70d2160a75a96345644b98da1370c964f75b
+  sha1: sha256:eaf158e86a15bd7daa725fd3fd2db0b9a8f48828af7f3c6e36b8c231f49ced7b
+  packages:
+  - cf-cli-7-linux
+- name: db-registrar
+  version: e7b4d14ca1add712318a46afc0da51c150a70f70a80d7880d55eb767cc414973
+  fingerprint: e7b4d14ca1add712318a46afc0da51c150a70f70a80d7880d55eb767cc414973
+  sha1: sha256:be5dfa635ec7cb32c7e753afac83f4bc8e2fa48495ee670ec758a76d317f4854
+  packages:
+  - pxc
+- name: uaa-registrar
+  version: 449012aa1a24146f95468badb2efe73e429b64fa7563f1451fc71ba0800a0b6f
+  fingerprint: 449012aa1a24146f95468badb2efe73e429b64fa7563f1451fc71ba0800a0b6f
+  sha1: sha256:ecd593a0851bb5a9b81e4c456ce7adbc7021ee5bd42df6080004b6d8736986a0
+  packages:
+  - uaac
+  - ruby-2.5.5-r0.10.0
+packages:
+- name: cf-cli-7-linux
+  version: 8248a9ba9047be044884010f9af3c108ee9766d5
+  fingerprint: 8248a9ba9047be044884010f9af3c108ee9766d5
+  sha1: 7c5361939fbedadd7e309a4d8980a9576cd94de6
+  dependencies: []
+- name: pxc
+  version: b71a39043b80fb5665e944d98104225d024d31103928270f6a02e1ab2e32eca8
+  fingerprint: b71a39043b80fb5665e944d98104225d024d31103928270f6a02e1ab2e32eca8
+  sha1: sha256:1aaf38f45eed4a7866df798731393fe72032a44a8e8a68be06c4aad211c31529
+  dependencies: []
+- name: ruby-2.5.5-r0.10.0
+  version: 836a515cbf2a1756a3e4c82f155dbc0d9920c2b8b3cfab14a501b09089d1d1c3
+  fingerprint: 836a515cbf2a1756a3e4c82f155dbc0d9920c2b8b3cfab14a501b09089d1d1c3
+  sha1: sha256:ea17edcc56edb58d8ea47225887b8e9e8d80cd9ada316af91929964f244eabe0
+  dependencies: []
+- name: uaac
+  version: 49f4fcd5d26785735714623d532d8ee66bcfe307792e0a694e0fce4bd51ebdaf
+  fingerprint: 49f4fcd5d26785735714623d532d8ee66bcfe307792e0a694e0fce4bd51ebdaf
+  sha1: sha256:d1dd9fe5194967ea0dad0141b160b60c96413dd6181430e06ac99c34b4e5fd9c
+  dependencies:
+  - ruby-2.5.5-r0.10.0
+license:
+  version: bb07be9bd93bcf33eb7b7beb8874200b8b9a7f4335f5b315c53c4399c1bcbc1d
+  fingerprint: bb07be9bd93bcf33eb7b7beb8874200b8b9a7f4335f5b315c53c4399c1bcbc1d
+  sha1: sha256:c6987cefbfbcc083d1c8c7c32ded3b508a6d4500ad4f4f500bab0449f6726b53
