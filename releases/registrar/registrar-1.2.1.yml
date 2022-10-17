@@ -1,0 +1,50 @@
+name: registrar
+version: 1.2.1
+commit_hash: 72b7362
+uncommitted_changes: false
+jobs:
+- name: broker-registrar
+  version: e877ef697267501074bb54c8f5bc70d2160a75a96345644b98da1370c964f75b
+  fingerprint: e877ef697267501074bb54c8f5bc70d2160a75a96345644b98da1370c964f75b
+  sha1: sha256:eaf158e86a15bd7daa725fd3fd2db0b9a8f48828af7f3c6e36b8c231f49ced7b
+  packages:
+  - cf-cli-7-linux
+- name: db-registrar
+  version: e7b4d14ca1add712318a46afc0da51c150a70f70a80d7880d55eb767cc414973
+  fingerprint: e7b4d14ca1add712318a46afc0da51c150a70f70a80d7880d55eb767cc414973
+  sha1: sha256:be5dfa635ec7cb32c7e753afac83f4bc8e2fa48495ee670ec758a76d317f4854
+  packages:
+  - pxc
+- name: uaa-registrar
+  version: 9a600b1960997edd14000aa6d501836d77d1b9575afa12f6a221c4e029057f21
+  fingerprint: 9a600b1960997edd14000aa6d501836d77d1b9575afa12f6a221c4e029057f21
+  sha1: sha256:a96dbf82b0095f5e287f93bd9c4587f895a30de4bfc2057f9d4d3d5363a8f950
+  packages:
+  - uaac
+  - ruby-3.1
+packages:
+- name: cf-cli-7-linux
+  version: 8248a9ba9047be044884010f9af3c108ee9766d5
+  fingerprint: 8248a9ba9047be044884010f9af3c108ee9766d5
+  sha1: 7c5361939fbedadd7e309a4d8980a9576cd94de6
+  dependencies: []
+- name: pxc
+  version: b71a39043b80fb5665e944d98104225d024d31103928270f6a02e1ab2e32eca8
+  fingerprint: b71a39043b80fb5665e944d98104225d024d31103928270f6a02e1ab2e32eca8
+  sha1: sha256:1aaf38f45eed4a7866df798731393fe72032a44a8e8a68be06c4aad211c31529
+  dependencies: []
+- name: ruby-3.1
+  version: 6302ffb79f6c117b3a0476e9b2c433a5fb1a3542fbced81e6244f88c14c42d44
+  fingerprint: 6302ffb79f6c117b3a0476e9b2c433a5fb1a3542fbced81e6244f88c14c42d44
+  sha1: sha256:af3075ddbfefe8a402d802838dc56c6a87fd1847d935680b163919788cec5379
+  dependencies: []
+- name: uaac
+  version: d6796a4a4438bc6259281ff3c4e1378bfeae48d4ad6ddc660022e078f894906d
+  fingerprint: d6796a4a4438bc6259281ff3c4e1378bfeae48d4ad6ddc660022e078f894906d
+  sha1: sha256:47f9f3cdad14db0466dc12f250f77dd74fb122f57f5cfecdf5639999ef2cee55
+  dependencies:
+  - ruby-3.1
+license:
+  version: bb07be9bd93bcf33eb7b7beb8874200b8b9a7f4335f5b315c53c4399c1bcbc1d
+  fingerprint: bb07be9bd93bcf33eb7b7beb8874200b8b9a7f4335f5b315c53c4399c1bcbc1d
+  sha1: sha256:c6987cefbfbcc083d1c8c7c32ded3b508a6d4500ad4f4f500bab0449f6726b53
