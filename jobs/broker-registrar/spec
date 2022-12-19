@@ -5,7 +5,7 @@ templates:
   errand.sh.erb: bin/run
 
 packages:
-  - cf-cli-7-linux
+  - cf-cli
 
 properties:
   cf.api:
