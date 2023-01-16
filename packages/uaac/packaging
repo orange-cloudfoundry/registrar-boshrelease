@@ -7,5 +7,6 @@ cp -a * ${BOSH_INSTALL_TARGET}
 patch ${BOSH_INSTALL_TARGET}/cf-uaac/cf-uaac.gemspec < cf-uaac.gemspec.patch
 cd ${BOSH_INSTALL_TARGET}/cf-uaac
 
-bosh_bundle_local --deployment
+bundle config set --local deployment 'true'
+bosh_bundle_local
 
