@@ -1,3 +1,6 @@
 [submodule "src/cf-uaac"]
 	path = src/cf-uaac
 	url = https://github.com/cloudfoundry/cf-uaac.git
+[submodule "src/ruby-release"]
+	path = src/ruby-release
+	url = https://github.com/bosh-packages/ruby-release.git
