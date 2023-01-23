@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-set -e -x
+set -e
+set -x
 
-cd ${BUILD_DIR}/cf-uaac
+cd "${BUILD_DIR:?}/cf-uaac"
 
 rm -rf ./vendor/cache/
 

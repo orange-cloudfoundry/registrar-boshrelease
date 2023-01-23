@@ -1,12 +1,13 @@
-set -e -x
+#!/usr/bin/env bash
+set -e
+set -x
 
 # shellcheck disable=1090
 source "${BOSH_PACKAGES_DIR:-/var/vcap/packages}/ruby-3.1/bosh/compile.env"
 
-cp -a * ${BOSH_INSTALL_TARGET}
-patch ${BOSH_INSTALL_TARGET}/cf-uaac/cf-uaac.gemspec < cf-uaac.gemspec.patch
-cd ${BOSH_INSTALL_TARGET}/cf-uaac
+cp -at "${BOSH_INSTALL_TARGET:?}" *
+patch "${BOSH_INSTALL_TARGET}/cf-uaac/cf-uaac.gemspec" < cf-uaac.gemspec.patch
+cd "${BOSH_INSTALL_TARGET}/cf-uaac"
 
 bundle config set --local deployment 'true'
 bosh_bundle_local
-
