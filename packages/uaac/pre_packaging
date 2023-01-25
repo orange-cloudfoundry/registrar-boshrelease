@@ -10,7 +10,8 @@ rm -rf ./vendor/cache/
 set +e
 for i in {1..3}; do
   bundle config --local
-  BUNDLE_WITHOUT=development:test bundle _2.3.26_ package --all --all-platforms --no-install
+  bundle config set cache_all true
+  BUNDLE_WITHOUT=development:test bundle _2.3.26_ package --all-platforms --no-install
   exit_code="$?"
 
   if [ "${exit_code}" == "0" ]; then
