@@ -1,32 +1,43 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 set -e
 set -x
+
+export BUNDLE_WITHOUT=development:test
 
 cd "${BUILD_DIR:?}/cf-uaac"
 
 rm -rf ./vendor/cache/
 
-set +e
-for i in {1..3}; do
-  bundle config --local
-  bundle config set cache_all true
-  BUNDLE_WITHOUT=development:test bundle _2.3.26_ package --all-platforms --no-install
-  exit_code="$?"
+if [ -f Gemfile.lock ] && sed -n '/^PLATFORMS/,/^$/p' | grep -q x86_64-linux-musl
+then bundle lock --remove-platform x86_64-linux-musl
+fi
 
-  if [ "${exit_code}" == "0" ]; then
-    break
-  fi
-  sleep 1
+exit_code=0
+for i in 1 2 3
+do
+	bundle config --local
+	bundle config set cache_all true
+	bundle lock --add-platform x86_64-linux
+	# the following bundle version must be kept the same as in `.github/workflows/main.yml`:
+	# .jobs.build.steps[].with.bundle
+	if bundle _2.3.26_ package --all-platforms --no-install
+	then break
+	else
+		exit_code=$?
+		sleep 1
+	fi
 done
-set -e
-if [ "${exit_code}" != "0" ]; then
-  echo "ERROR: Failed to run 'bundle package' after 3 attempts"
-  exit "${exit_code}"
+
+if [ "${exit_code}" != "0" ]
+then
+	>&2 echo "ERROR: Failed to run 'bundle package' after $i attempts"
+	exit "${exit_code}"
 fi
 
 rm -rf ./vendor/cache/ruby
 rm -rf ./vendor/cache/vendor
+
 bundle config --delete NO_INSTALL
 
 rm -rf .bundle/
