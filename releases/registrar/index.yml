@@ -23,6 +23,8 @@ builds:
     version: 1.4.0
   cce264ad-0f7e-4c18-6a03-be4d0081fd76:
     version: 1.2.0
+  deb3c328-7b21-4d86-753b-15358a8b289c:
+    version: 1.5.0
   ea7cedb1-1605-4d13-57c3-b77a5ea8da80:
     version: 1.2.2
 format-version: "2"
