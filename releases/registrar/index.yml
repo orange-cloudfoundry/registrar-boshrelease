@@ -63,6 +63,8 @@ builds:
     version: 1.5.0
   ea7cedb1-1605-4d13-57c3-b77a5ea8da80:
     version: 1.2.2
+  edba122f-f2c5-4816-6a38-828a614e9c39:
+    version: 1.25.0
   f77a72a6-f72a-4bc4-6f32-d43c665fa659:
     version: 1.23.0
 format-version: "2"
