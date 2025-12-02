@@ -1,0 +1,35 @@
+---
+name: feature-flags-registrar
+
+templates:
+  errand.sh.erb: bin/run
+
+packages:
+  - cf-cli-7-linux
+
+properties:
+  cf.api:
+    description: 'Full URL of Cloud Foundry API'
+    example: 'https://api.your-domain.example.com'
+  cf.skip_ssl_validation:
+    description: 'Skip SSL validation when connecting to Cloud Foundry API'
+    default: false
+  cf.username:
+    description: 'Username of the admin user'
+  cf.password:
+    description: 'Password of the admin user'
+  feature_flags:
+    description: |
+      Map of feature flags to configure. Each key is the feature flag name, and the value is a boolean (true to enable, false to disable).
+      Only feature flags explicitly listed here will be modified. Others will remain untouched.
+      The script will verify that the feature flag exists before attempting to modify it.
+
+      Example:
+        feature_flags:
+          diego_docker: false
+          diego_cnb: true
+          user_org_creation: false
+          my_custom_flag: true
+    default: {}
+
+
