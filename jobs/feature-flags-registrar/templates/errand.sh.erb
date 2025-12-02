@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+
+set -eu
+
+export PACKAGE=/var/vcap/packages/cf-cli-7-linux/bin
+export PATH=${PATH}:${PACKAGE}
+export CF_BIN=${PACKAGE}/cf
+export CF_DIAL_TIMEOUT=30
+
+function feature_flags::exists() {
+  local l_flag_name=$1; shift
+
+  # Try to get the feature flag info, if it fails, it doesn't exist
+  if ${CF_BIN} feature-flag "${l_flag_name}" 2>&1 | grep -q "Feature flag.*not found"; then
+    return 1
+  fi
+
+  return 0
+}
+
+function feature_flags::get_current_state() {
+  local l_flag_name=$1; shift
+
+  # Extract the state from the output line containing the flag name (not the header)
+  # Example output:
+  # Getting info for feature flag diego_cnb as xctd1628...
+  #
+  # Features    State
+  # diego_cnb   enabled
+  local current_state=$(${CF_BIN} feature-flag "${l_flag_name}" | grep "^${l_flag_name}" | awk '{print $2}')
+
+  echo "${current_state}"
+}
+
+function feature_flags::state_to_boolean() {
+  local l_state=$1; shift
+
+  if [[ "${l_state}" == "enabled" ]]; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
+function feature_flags::enable() {
+  local l_flag_name=$1; shift
+
+  echo "  -> enabling feature flag"
+  ${CF_BIN} enable-feature-flag "${l_flag_name}"
+}
+
+function feature_flags::disable() {
+  local l_flag_name=$1; shift
+
+  echo "  -> disabling feature flag"
+  ${CF_BIN} disable-feature-flag "${l_flag_name}"
+}
+
+function feature_flags::should_enable() {
+  local l_current_state=$1; shift
+  local l_desired_state=$1; shift
+
+  [[ "${l_desired_state}" == "true" && "${l_current_state}" == "false" ]]
+}
+
+function feature_flags::should_disable() {
+  local l_current_state=$1; shift
+  local l_desired_state=$1; shift
+
+  [[ "${l_desired_state}" == "false" && "${l_current_state}" == "true" ]]
+}
+
+function feature_flags::set() {
+  local l_flag_name=$1; shift
+  local l_enabled=$1; shift
+
+  echo "Processing feature flag: ${l_flag_name}"
+
+  # Check if feature flag exists
+  if ! feature_flags::exists "${l_flag_name}"; then
+    echo "  -> WARNING: feature flag '${l_flag_name}' does not exist, skipping"
+    echo ""
+    return 0
+  fi
+
+  local current_state=$(feature_flags::get_current_state "${l_flag_name}")
+  local current_state_bool=$(feature_flags::state_to_boolean "${current_state}")
+
+  echo "  current state: ${current_state} (${current_state_bool})"
+  echo "  desired state: ${l_enabled}"
+
+  if feature_flags::should_enable "${current_state_bool}" "${l_enabled}"; then
+    feature_flags::enable "${l_flag_name}"
+  elif feature_flags::should_disable "${current_state_bool}" "${l_enabled}"; then
+    feature_flags::disable "${l_flag_name}"
+  else
+    echo "  -> already in desired state, skipping"
+  fi
+  echo ""
+}
+
+function cf::api_connect() {
+  local l_api=$1; shift
+  local l_skipSSL=$1; shift
+
+  if [[ ${l_skipSSL} == "true" ]]; then
+    ${CF_BIN} api ${l_api} --skip-ssl-validation
+  else
+    ${CF_BIN} api ${l_api}
+  fi
+}
+
+function cf::auth() {
+  local l_username=$1; shift
+  local l_password=$1; shift
+
+  ${CF_BIN} auth "${l_username}" "${l_password}"
+}
+
+function cf::login()
+{
+  local l_api='<%= p("cf.api") %>'
+  local l_username='<%= p("cf.username") %>'
+  local l_password='<%= p("cf.password") %>'
+  local l_skipSSL='<%= p("cf.skip_ssl_validation") %>'
+
+  echo "Login to Cloudfoundry"
+  echo "  api_url:             ${l_api}"
+  echo "  skip_ssl_validation: ${l_skipSSL}"
+  echo "  username:            ${l_username}"
+
+  cf::api_connect "${l_api}" "${l_skipSSL}"
+  cf::auth "${l_username}" "${l_password}"
+  echo ""
+}
+
+cf::login
+
+# Process all feature flags from the configuration map
+<% p("feature_flags").each do |flag_name, enabled| %>
+feature_flags::set "<%= flag_name %>" "<%= enabled %>"
+<% end %>
+
+<% if p("feature_flags").empty? %>
+echo "No feature flags configured. Nothing to do."
+<% else %>
+echo "All configured feature flags have been processed successfully!"
+<% end %>
+
+echo "\nCurrent state of all feature flags:"
+${CF_BIN} feature-flags

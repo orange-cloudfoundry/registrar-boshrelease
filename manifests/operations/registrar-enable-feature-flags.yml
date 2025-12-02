@@ -1,0 +1,37 @@
+---
+- type: replace
+  path: /instance_groups/0/jobs/0:before
+  value:
+    release: registrar
+    name: feature-flags-registrar
+    properties:
+      cf:
+        api: https://api.((system_domain))
+        username: feature-flags
+        password: ((/((director_name))/cf/uaa_users_feature_flags_password))
+        skip_ssl_validation: ((skip_ssl_verify))
+      feature_flags:
+        diego_docker: false
+        service_instance_sharing: true
+        user_org_creation: false
+        private_domain_creation: false
+        app_bits_upload: true
+        app_scaling: true
+        route_creation: true
+        service_instance_creation: true
+        set_roles_by_username: true
+        unset_roles_by_username: true
+        task_creation: true
+        env_var_visibility: true
+        space_scoped_private_broker_creation: true
+        space_developer_env_var_visibility: true
+        hide_marketplace_from_unauthenticated_users: false
+        resource_matching: true
+        diego_cnb: true
+
+- type: replace
+  path: /releases/name=registrar?
+  value:
+    name: registrar
+    version: latest
+    url: https://github.com/orange-cloudfoundry/registrar-boshrelease/releases/download/v1.0.0/registrar-1.0.0.tgz
