@@ -97,6 +97,8 @@ builds:
     version: 1.40.0
   deb3c328-7b21-4d86-753b-15358a8b289c:
     version: 1.5.0
+  e550e46c-c0f7-4165-5874-69c3dfb39bac:
+    version: 1.44.0
   ea7cedb1-1605-4d13-57c3-b77a5ea8da80:
     version: 1.2.2
   edba122f-f2c5-4816-6a38-828a614e9c39:
